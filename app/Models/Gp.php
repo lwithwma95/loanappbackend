@@ -24,6 +24,9 @@ class Gp extends Model
 
     protected $fillable = ['gp_id', 'gp_name', 'block_id'];
 
+    /** BIGINT code — see Member::$casts for why this is pinned to string. */
+    protected $casts = ['gp_id' => 'string'];
+
     public function block(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Block::class, 'block_id', 'block_id');

@@ -23,8 +23,24 @@ class BlockCadreController extends Controller
         return response()->json($query->orderBy('name')->get());
     }
 
+    /**
+     * Clients read cadre_code straight off a member record, where it originates as a
+     * BIGINT and can arrive as a JSON number rather than a string. Normalise it so the
+     * `string` rule below judges the value, not the JSON type it happened to travel in.
+     */
+    private function normalizeCadreCode(Request $request): void
+    {
+        $code = $request->input('cadre_code');
+
+        if (\is_int($code) || \is_float($code)) {
+            $request->merge(['cadre_code' => (string) $code]);
+        }
+    }
+
     public function store(Request $request): JsonResponse
     {
+        $this->normalizeCadreCode($request);
+
         $data = $request->validate([
             'cadre_code'     => 'required|string|unique:block_cadres,cadre_code|exists:member,mem_code',
             'email'          => 'required|email|unique:block_cadres,email|unique:users,email',
@@ -72,6 +88,8 @@ class BlockCadreController extends Controller
 
     public function update(Request $request, BlockCadre $blockCadre): JsonResponse
     {
+        $this->normalizeCadreCode($request);
+
         $data = $request->validate([
             'block_id'       => 'nullable|integer',
             'district_id'    => 'nullable|integer',

@@ -26,6 +26,18 @@ class Member extends Model
 
     protected $fillable = ['mem_code', 'mem_name', 'mem_guard_name', 'mem_mobile', 'mem_status', 'shg_code'];
 
+    /**
+     * mem_code / shg_code are BIGINT in the MIS tables. PDO returns a BIGINT as a
+     * PHP int when the value fits in PHP_INT_MAX and as a string when it doesn't,
+     * so JSON responses would emit a number for short codes (and for every code on
+     * 64-bit PHP) but a string for long ones. Clients echo the value back to
+     * `required|string` endpoints, so pin it to string here.
+     */
+    protected $casts = [
+        'mem_code' => 'string',
+        'shg_code' => 'string',
+    ];
+
     public function shg(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Shg::class, 'shg_code', 'shg_code');

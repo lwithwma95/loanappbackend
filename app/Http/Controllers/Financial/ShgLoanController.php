@@ -113,6 +113,13 @@ class ShgLoanController extends Controller
             return response()->json(['message' => 'Only Block staff can create SHG loans.'], 403);
         }
 
+        // shg_code is a BIGINT in the MIS tables and can reach us as a JSON number
+        // when the client echoes back an SHG record. Judge the value, not its type.
+        $shgCode = $request->input('shg_code');
+        if (\is_int($shgCode) || \is_float($shgCode)) {
+            $request->merge(['shg_code' => (string) $shgCode]);
+        }
+
         $data = $request->validate([
             'loan_id'            => 'required|string|max:50|unique:shgloan,loan_id',
             // Same guard as MemberLoanController::store() on mem_code — the SHG picked in the

@@ -161,6 +161,13 @@ class MemberLoanController extends Controller
             return response()->json(['message' => 'Only Block staff can create loans.'], 403);
         }
 
+        // mem_code is a BIGINT in the MIS tables and can reach us as a JSON number
+        // when the client echoes back a member record. Judge the value, not its type.
+        $memCode = $request->input('mem_code');
+        if (\is_int($memCode) || \is_float($memCode)) {
+            $request->merge(['mem_code' => (string) $memCode]);
+        }
+
         $data = $request->validate([
             'loan_id'          => 'required|string|max:50|unique:memberloan,loan_id',
             'mem_code'         => 'required|string|exists:member,mem_code',

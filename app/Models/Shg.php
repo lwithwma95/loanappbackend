@@ -24,6 +24,12 @@ class Shg extends Model
 
     protected $fillable = ['shg_code', 'shg_name', 'vill_id_new','shg_status'];
 
+    /** BIGINT codes — see Member::$casts for why these are pinned to string. */
+    protected $casts = [
+        'shg_code'    => 'string',
+        'vill_id_new' => 'string',
+    ];
+
     public function village(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Village::class, 'vill_id_new', 'vill_id');

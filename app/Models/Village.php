@@ -28,6 +28,12 @@ class Village extends Model
         'gp_id',
     ];
 
+    /** BIGINT codes — see Member::$casts for why these are pinned to string. */
+    protected $casts = [
+        'vill_id' => 'string',
+        'gp_id'   => 'string',
+    ];
+
     public function gp(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Gp::class, 'gp_id', 'gp_id');
